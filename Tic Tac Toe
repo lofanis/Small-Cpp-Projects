@@ -274,6 +274,8 @@ int main(){
                                         }else{
                                             move = {2,2};
                                         }
+                                    }else{
+                                        move=BotMove(grid,symbol,dif);
                                     }
                                 }
                             }else if(counter==2){ // bot plays second/first move
@@ -678,7 +680,7 @@ std::vector<int> BotMove(int grid[][3], int symbol, int dif){
                     return toReturn;
                 }
             }
-        }else if(dif==2){
+        }else if(dif==2 || dif==3){
             int cSymbol;
             symbol == 1? cSymbol = 2 : cSymbol = 1;
             std::vector<int> check = WinMove(grid, cSymbol);
