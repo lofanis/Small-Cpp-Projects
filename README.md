@@ -5,7 +5,7 @@ Hello, everyone. I am Lolas Theofanis, also a programmer of Python, a bit of Uni
 Welcome to my journey.
 
 Contents:
--Luhn's Algorithm: An algorithm for credit card validation
+-Luhn's Algorithm: An algorithm for credit card validation\n
 -Hangman: Classic hangman game
 -Bubble sort: An algorithm for sorting numbers
 -Password evaluator: Gives a percentage score to a password depending on its strength
