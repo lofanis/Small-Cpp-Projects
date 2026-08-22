@@ -5,6 +5,7 @@ Hello, everyone. I am Lolas Theofanis, also a programmer of Python, a bit of Uni
 Welcome to my journey.
 
 Contents:
+
 -Luhn's Algorithm: An algorithm for credit card validation
 
 -Hangman: Classic hangman game
