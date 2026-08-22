@@ -1,0 +1,706 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <limits>
+#include <ctime>
+
+int DecWin(int grid[][3]);
+void PrintGrid(int grid[][3]);
+std::vector<int> BotMove(int grid[][3], int symbol, int dif);
+std::vector<int> GetCor(int index);
+std::vector<int> WinMove(int grid[][3], int symbol);
+std::string rPlType(int move);
+
+
+int main(){
+    std::cout << "\033[2J\033[H";
+    std::cout << "########## ⭕   TIC-TAC-TOE ❌   ##########\n";
+
+    int grid[][3] = {{0, 0, 0},
+                     {0, 0, 0},
+                     {0, 0, 0}};
+    int dif;
+    while(true){
+        std::cout << "Choose difficulty: (1: Easy / 2: Medium / 3: Hard) ";
+        while(!(std::cin >> dif)){
+            std::cout << "Chooce difficulty: (1: Easy / 2: Medium / 3: Hard) ";
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
+        if(dif<1||dif>3){
+            std::cout << "Invalid.\n";
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }else{
+            break;
+        }
+    }
+
+    srand(time(NULL));
+    int turn = rand()%2+1;
+    std::string playerFirst;
+    turn == 1 ? playerFirst = "Bot" : playerFirst = "Player";
+    std::string playerSecond;
+    playerFirst == "Bot"?playerSecond = "Player":playerSecond="Bot";
+    int symbol;
+    playerFirst == "Bot" ? symbol = 1 : symbol = 2;
+
+    int pMove;
+    int pSymbol;
+    symbol == 1? pSymbol = 2: pSymbol = 1;
+
+    int counter = 0;
+    std::string pMoveType = "";
+
+    srand(time(NULL));
+    int COR = rand()%4 + 1;
+    COR==2?COR=3:COR==3?COR=7:COR==4?COR=9:COR=1;
+
+    while(true){
+        if(counter>1){
+        std::cout << "\033[2J\033[H";}
+        if(!counter){
+            std::cout << playerFirst << " plays first.\n";
+        }
+        counter ++;
+        int check = DecWin(grid);
+        if(!check&&check!=3){
+            std::vector<int> move;
+            if(turn==1){
+                PrintGrid(grid);
+                if(dif!=3){
+                move = BotMove(grid, symbol, dif);
+                }else{ // dif = 3
+                    bool sideMoveThree = false;
+                    std::vector<int> winRunCheck = WinMove(grid, symbol);
+                    if(winRunCheck[0]!=-1){
+                        move = {winRunCheck[0], winRunCheck[1]};
+                    }else{ // no opportunity
+                        std::vector<int> runCheck = WinMove(grid, pSymbol);
+                        if(runCheck[0]!=-1){
+                            move = {runCheck[0], runCheck[1]};
+                        }else{ // no danger
+                            if(counter==1){ // bot plays first
+                                
+                                int preMove = COR;
+                                
+                                if(preMove==1){
+                                    move = {0,0};
+                                }else if(preMove == 3){
+                                    move = {0,2};
+                                    
+                                }else if(preMove == 7){
+                                    move = {2,0};
+                                }else{
+                                    move = {2,2};
+                                }
+                                
+                            }else if(counter == 3){ // bot plays first/second move
+                                int cor;
+                                int i_=-1;
+                                int j_=-1;
+                                for(int i = 0; i < 3; i++){
+                                    for(int j = 0; j < 3; j++){
+                                        if(grid[i][j]==symbol){
+                                            j_ = j;
+                                            i_ = i;
+                                            break;
+                                        }
+                                        if(i_!=-1){
+                                            break;
+                                        }
+                                    }
+                                }
+                                if(!i_){
+                                    cor=i_+j_+1;
+                                }else{
+                                    j_==0?cor=7:cor=9;
+                                }
+
+                                if(pMoveType=="corner"){
+                                    while(true){
+                                        srand(time(NULL));
+                                        int preMove = rand()%4 + 1;
+                                        
+                                        if(preMove==1){
+                                            move = {0,0};
+                                        }else if(preMove == 2){
+                                            move = {0,2};
+                                        }else if(preMove == 3){
+                                            move = {2,0};
+                                        }else{
+                                            move = {2,2};
+                                        }
+
+                                        if(grid[move[0]][move[1]] == 0){
+                                            break;
+                                        }else{
+                                            continue;
+                                        }
+                                    }
+                                }else if(pMoveType=="center"){
+                                    srand(time(NULL));
+                                    int choice = rand()%2;
+                                    int preMove = 0;
+
+                                    if(!choice){ // choose opp. conrer
+                                        preMove=10-cor;
+                                        if(preMove==1){
+                                                move = {0,0};
+                                        }else if(preMove == 3){
+                                            move = {0,2};
+                                        }else if(preMove == 7){
+                                            move = {2,0};
+                                        }else{
+                                            move = {2,2};
+                                        }
+                                    }else{ // choose one of opp. sides
+                                        cor+5>9?preMove=cor-5:preMove=cor+5;
+                                        if(preMove==2){
+                                            move = {0,1};
+                                        }else if(preMove==4){
+                                            move = {1,0};
+                                        }else if(preMove==6){
+                                            move = {1,2};
+                                        }else{
+                                            move = {2,1};
+                                        }
+                                    }
+                                }else{ // player chooses side
+                                    int pi_;
+                                    int pj_;
+                                    int pcor;
+                                    int preMove;
+                                    for(int i = 0; i < 3; i++){
+                                        for(int j = 0; j < 3; j++){
+                                            if(grid[i][j]==pSymbol){
+                                                pj_ = j;
+                                                pi_ = i;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    if(!pi_){
+                                        pcor=pi_+pj_+1;
+                                    }else{
+                                        pj_==0?pcor=4:pj_==1?pcor=8:pcor=6;
+                                    }
+                                    
+                                    if(pi_==i_){
+                                        sideMoveThree = true;
+                                        if(i_==0){
+                                            preMove = cor+6;
+                                        }else{
+                                            preMove = cor-6;
+                                        }
+                                    }else if(pj_==j_){
+                                        sideMoveThree = true;
+                                        if(j_==0){
+                                            preMove = cor+2;
+                                        }else{
+                                            preMove = cor-2;
+                                        }
+                                    }else{
+                                        sideMoveThree = false;
+                                        for(int i = 0; i < 3; i++){
+                                            for(int j =0; j < 3; j++){
+                                                if(j==0 && i==0){
+                                                    if(pcor!=2 && pcor!=4){
+                                                        preMove = 1;
+                                                        break;
+                                                    }
+                                                }else if(j==2 && i==0){
+                                                    if(pcor!=2 && pcor!=6){
+                                                        preMove = 3;
+                                                        break;
+                                                    }
+                                                }else if(j==0 && i==2){
+                                                    if(pcor!=4 && pcor!=8){
+                                                        preMove = 7;
+                                                        break;
+                                                    }
+                                                }else if(j==2 && i==2){
+                                                    if(pcor!=8 && pcor!=6){
+                                                        preMove = 9;
+                                                        break;
+                                                    }
+                                                }else{
+                                                    continue;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    if(preMove==1){
+                                            move = {0,0};
+                                    }else if(preMove==3){
+                                        move = {0,2};
+                                    }else if(preMove==7){
+                                        move = {2,0};
+                                    }else{
+                                        move = {2,2};
+                                    }
+                                }
+                            }else if(counter == 5){ // bot plays first/third move
+                                if(pMoveType=="corner"){
+                                    while(true){
+                                        srand(time(NULL));
+                                        int preMove = rand()%4 + 1;
+                                        
+                                        if(preMove==1){
+                                            move = {0,0};
+                                        }else if(preMove == 2){
+                                            move = {0,2};
+                                        }else if(preMove == 3){
+                                            move = {2,0};
+                                        }else{
+                                            move = {2,2};
+                                        }
+
+                                        if(grid[move[0]][move[1]] == 0){
+                                            break;
+                                        }else{
+                                            continue;
+                                        }
+                                    }
+                                }else if(pMoveType=="center"){
+                                    move = BotMove(grid, symbol, dif);
+                                }else{
+                                    if(sideMoveThree){
+                                        int preMove = 10-COR;
+                                        if(preMove==1){
+                                                move = {0,0};
+                                        }else if(preMove == 3){
+                                            move = {0,2};
+                                        }else if(preMove == 7){
+                                            move = {2,0};
+                                        }else{
+                                            move = {2,2};
+                                        }
+                                    }
+                                }
+                            }else if(counter==2){ // bot plays second/first move
+                                if(pMoveType=="center"){
+                                    int prePrMove = rand()%4+1;
+                                    int preMove;
+                                    prePrMove==1?preMove=1:prePrMove==2?preMove=3:prePrMove==3?preMove=7:preMove=9;
+                                    if(preMove==1){
+                                        move = {0,0};
+                                    }else if(preMove == 3){
+                                        move = {0,2};
+                                        
+                                    }else if(preMove == 7){
+                                        move = {2,0};
+                                    }else{
+                                        move = {2,2};
+                                    }
+                                }else{
+                                    move={1,1};
+                                }
+                            }else if(counter==4){ // bot plays second/second move
+                                if(pMoveType=="corner"){
+                                    int prePrMove = rand()%4+1;
+                                    int preMove;
+                                    prePrMove==1?preMove=2:prePrMove==2?preMove=4:prePrMove==3?preMove=6:preMove=8;
+                                    if(preMove==2){
+                                        move = {0,1};
+                                    }else if(preMove == 4){
+                                        move = {1,0};
+                                        
+                                    }else if(preMove == 6){
+                                        move = {1,2};
+                                    }else{
+                                        move = {2,1};
+                                    }
+                                }else{
+                                    move=BotMove(grid,symbol,dif);
+                                }
+                            }else{
+                                int zeroCount = 0;
+                                int same = 0;
+                                int j_ = -1;
+                                int i_ = -1;
+                                for(int i = 0; i < 3; i++){
+                                    for(int j = 0; j < 3; j++){
+                                        if(!grid[i][j]){
+                                            zeroCount++;
+                                        }else if(grid[i][j]==symbol){
+                                            same++;
+                                        }
+                                        j_=j;
+                                    }
+                                    if(zeroCount==2&&same==1){
+                                        i_=i;
+                                        break;
+                                    }else{
+                                        zeroCount = 0;
+                                        same = 0;
+                                        j_=-1;
+                                        continue;
+                                    }
+                                }
+
+                                if(i_!=-1){
+                                    for(int j = 0; j < 3; j++){
+                                        for(int i = 0; i < 3; i++){
+                                            if(!grid[i][j]){
+                                                zeroCount++;
+                                            }else if(grid[i][j]==symbol){
+                                                same++;
+                                            }
+                                            i_=i;
+                                        }
+                                        if(zeroCount==2&&same==1){
+                                            j_=j;
+                                            break;
+                                        }else{
+                                            zeroCount = 0;
+                                            same = 0;
+                                            i_=-1;
+                                            continue;
+                                        }
+                                    }
+                                }
+
+                                if(i_==-1){
+                                move=BotMove(grid,symbol,dif);}else{
+                                    move={i_,j_};
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (grid[move[0]][move[1]] != 0) {
+                    std::cerr << "BUG: Bot selected occupied square!\n" << move[0] << move[1];
+                }
+
+                grid[move[0]][move[1]] = symbol;
+                std::cout << "Bot thinking...\n";
+                turn = 2;
+            }else{
+                PrintGrid(grid);
+                while(true){
+                std::cout << "Choose move: (1-9) ";
+                while (!(std::cin >> pMove) || pMove < 1 || pMove > 9) {
+                    std::cout << "Invalid move. Choose 1-9: ";
+                    std::cin.clear();
+                    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                }
+
+                std::vector<int> move = GetCor(pMove);
+                if(grid[move[0]][move[1]] == pSymbol || grid[move[0]][move[1]] == symbol){
+                    std::cout << "\nCell occupied.\n";
+                }else{
+                    grid[move[0]][move[1]] = pSymbol;
+                    break;
+                }}
+
+                if(counter<3){
+                pMoveType = rPlType(pMove);
+                }
+                turn = 1;
+                
+            }
+        }else{        }
+
+        if(check!=0){
+        std::cout << '\n';
+        check==1?std::cout << playerFirst << " won.":check==2?std::cout << playerSecond << " won.":std::cout << "It is a draw. (Try winning next time!) ";
+        std::cout << '\n';
+        std::cout << "Would you like to play again? (y/n) ";
+
+        char choice;
+
+        while (true) {
+            std::cin >> choice;
+
+            choice = std::tolower(choice);
+
+            if (choice == 'y' || choice == 'n') {
+                break;
+            }
+
+            std::cout << "Invalid input. Please enter y or n: ";
+            }
+
+        if (choice == 'y') {
+            // Reset board
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    grid[i][j] = 0;
+                }
+            }
+
+            // Reset game state
+            counter = 0;
+            pMove = 0;
+            pMoveType = "";
+
+            // Choose who starts again
+            turn = rand() % 2 + 1;
+
+            // Recalculate symbols
+            symbol = (turn == 1) ? 1 : 2;
+            pSymbol = (symbol == 1) ? 2 : 1;
+            symbol==1?playerFirst="Bot":playerFirst="Player";
+            playerFirst=="Bot"?playerSecond="Player":playerSecond="Bot";
+
+            // New random starting corner for hard mode
+            COR = rand() % 4 + 1;
+            COR == 2 ? COR = 3 :
+            COR == 3 ? COR = 7 :
+            COR == 4 ? COR = 9 :
+                    COR = 1;
+
+            continue;
+        } else {
+            break;
+        }
+}
+    
+    }
+    std::cout << "\nThank you for playing!";
+    return 0;
+}
+
+std::string rPlType(int move){
+    if(move%2){
+        if(move==5){
+            return "center";
+        }else{
+            return "corner";
+        }
+    }else{
+        return "side";
+    }
+}
+
+void PrintGrid(int grid[][3]){
+    std::cout << "+---+---+---+\n";
+    std::cout << "| ";
+    for(int i = 0; i < 3; i++){
+    grid[0][i] == 1 ? std::cout <<  "X | ": grid[0][i] == 2 ? std::cout << "O | ": std::cout << "  | ";
+    }
+    std::cout << '\n';
+    std::cout << "+---+---+---+\n";
+    std::cout << "| ";
+
+    for(int i = 0; i < 3; i++){
+    grid[1][i] == 1 ? std::cout <<  "X | ": grid[1][i] == 2 ? std::cout << "O | ": std::cout << "  | ";
+    }
+
+    std::cout << '\n';
+    std::cout << "+---+---+---+\n";
+    std::cout << "| ";
+
+    for(int i = 0; i < 3; i++){
+    grid[2][i] == 1 ? std::cout <<  "X | ": grid[2][i] == 2 ? std::cout << "O | ": std::cout << "  | ";
+    }
+
+    std::cout << '\n';
+    std::cout << "+---+---+---+\n";
+
+}
+
+int DecWin(int grid[][3]){
+    // Horizontal
+    for(int i = 0; i < 3; i++){
+        for(int j = 0; j < 3; j++){
+            if(grid[i][j]==0){
+                break;
+            }else{
+                if(j==2){
+                    if((grid[i][1])==(grid[i][0])&&(grid[i][0])==(grid[i][2])){
+                        PrintGrid(grid);
+                    return grid[i][j];}else{
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    // Vertical
+    for(int i = 0; i < 3; i++){
+        for(int j = 0; j < 3; j++){
+            if(grid[j][i]==0){
+                break;
+            }else{
+                if(j==2){
+                    if((grid[0][i])==(grid[1][i])&&(grid[1][i])==(grid[2][i])){
+                        PrintGrid(grid);
+                        return grid[0][i];
+                    }else{
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    // Diagonal
+    if(grid[0][0] == grid[1][1] && grid[1][1] == grid[2][2] && grid[0][0]!=0){
+        PrintGrid(grid);
+        return grid[0][0];
+    }else if(grid[0][2] == grid[1][1] && grid[1][1] == grid[2][0] && grid[0][2]!=0){
+        PrintGrid(grid);
+        return grid[0][2];
+    }
+
+    int zeroCounter = 0;
+    for(int i = 0; i < 3; i++){
+        for(int j = 0; j < 3; j++){
+            if(!grid[i][j]){
+                zeroCounter ++;
+            }
+        }
+    }
+
+    if(!zeroCounter){
+        return 3;
+    }else{
+    return 0;}
+}
+
+std::vector<int> WinMove(int grid[][3], int symbol){
+    
+    // Horizontal
+    for(int i = 0; i < 3; i++){
+        int zeroCount = 0;
+        int same = 0;
+        int j_;
+        for(int j = 0; j < 3; j++){
+            grid[i][j] == 0 ? zeroCount++ : zeroCount += 0;
+            if(grid[i][j]==0){j_ = j;}
+            grid[i][j] == symbol ? same ++ : same += 0;
+            if(zeroCount>1){
+                break;
+            }else if(j==2&&same==2&&zeroCount==1){
+                std::vector<int> toReturn = {i, j_};
+                return toReturn;
+            }
+        }
+    }
+
+    // Vertical
+    for(int i = 0; i < 3; i++){
+        int zeroCount = 0;
+        int same = 0;
+        int j_;
+        for(int j = 0; j < 3; j++){
+            grid[j][i] == 0 ? zeroCount++ : zeroCount += 0;
+            if(grid[j][i]==0){j_ = j;}
+            grid[j][i] == symbol ? same ++ : same += 0;
+            if(zeroCount>1){
+                break;
+            }else if(j==2&&same==2&&zeroCount==1){
+                std::vector<int> toReturn = {j_, i};
+                return toReturn;
+            }
+        }
+    }
+
+    // Diagonal
+    int zeroCount = 0;
+    int same = 0;
+    int i_;
+    for(int i = 0; i < 3; i++){
+        grid[i][i] == 0 ? zeroCount++ : zeroCount += 0;
+        if(grid[i][i] == 0){i_=i;}
+        grid[i][i] == symbol ? same ++ : same += 0;
+        if(zeroCount>1){
+            break;
+        }else if(i==2&&same==2&&zeroCount==1){
+            std::vector<int> toReturn = {i_, i_};
+            return toReturn;
+        }
+    }
+
+    zeroCount = 0;
+    same = 0;
+    int j_;
+
+    for(int i = 0; i < 3; i++){
+        int j = 2 - i;
+
+        grid[i][j] == 0 ? zeroCount++ : zeroCount += 0;
+
+        if(grid[i][j] == 0){
+            i_ = i;
+            j_ = j;
+        }
+
+        grid[i][j] == symbol ? same++ : same += 0;
+
+        if(zeroCount > 1){
+            break;
+        }else if(i == 2 && same == 2 && zeroCount == 1){
+            std::vector<int> toReturn = {i_, j_};
+            return toReturn;
+        }
+    }
+
+    std::vector<int> toReturn = {-1, -1};
+    return toReturn;
+}
+
+std::vector<int> GetCor(int index){
+    int pMove = index;
+    int row;
+    int column;
+    ! (pMove % 3) ? row = pMove/3 - 1 : row = pMove/3;
+
+    if((pMove==1)||(pMove==4)||(pMove==7)){
+        column = 0;
+    }else if((pMove==2)||(pMove==5)||(pMove==8)){
+        column = 1;
+    }else{
+        column = 2;
+    }
+    std::vector<int> toReturn = {row, column};
+    return toReturn;
+}
+
+std::vector<int> BotMove(int grid[][3], int symbol, int dif){
+
+    std::vector<int> vec = WinMove(grid, symbol);
+    if(vec[0]!=-1){
+        std::vector<int> toReturn = {vec[0], vec[1]};
+        return toReturn;
+    }else{
+        if(dif==1){
+            while(true){
+                srand(time(NULL));
+                int bMove = (rand()%9)+1;
+                std::vector<int> finBMove = GetCor(bMove);
+                if(grid[finBMove[0]][finBMove[1]]){
+                    continue;
+                }else{
+                    std::vector<int> toReturn = {finBMove[0], finBMove[1]};
+                    return toReturn;
+                }
+            }
+        }else if(dif==2){
+            int cSymbol;
+            symbol == 1? cSymbol = 2 : cSymbol = 1;
+            std::vector<int> check = WinMove(grid, cSymbol);
+            if(check[0]!=-1){
+                std::vector<int> toReturn = {check[0], check[1]};
+                return toReturn;
+            }else{
+                while(true){
+                    srand(time(NULL));
+                    int bMove = (rand()%9)+1;
+                    std::vector<int> finBMove = GetCor(bMove);
+                    if(grid[finBMove[0]][finBMove[1]]){
+                        continue;
+                    }else{
+                        std::vector<int> toReturn = {finBMove[0], finBMove[1]};
+                        return toReturn;
+                    }
+                }   
+            }
+        }else{
+            return std::vector<int> {-1,-1};
+        }   
+    }
+}
+
