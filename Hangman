@@ -1,0 +1,106 @@
+#include <iostream>
+#include <string>
+#include <ctime>
+#include <vector>
+
+int main(){
+
+    std::string words[] = {"apple",
+    "banana",
+    "computer",
+    "dragon",
+    "elephant",
+    "guitar",
+    "jungle",
+    "keyboard",
+    "mountain",
+    "penguin",
+    "rainbow",
+    "rocket",
+    "school",
+    "sunshine",
+    "treasure",
+    "umbrella",
+    "volcano",
+    "wizard",
+    "zebra",
+    "castle",
+    "football",
+    "library",
+    "pizza",
+    "chocolate",
+    "dinosaur",
+    "airplane",
+    "sandwich",
+    "adventure",
+    "butterfly",
+    "fireworks"};
+    std::cout << "=====WELCOME TO HANGMAN=====";
+
+    while(true){
+    srand(time(NULL));
+    std::string choice = words[rand()%sizeof(words)/sizeof(words[0])];
+    char guess;
+    int mistakes = 7;
+    std::string check="";
+    std::string state = "None";
+
+    std::vector<char> letters;
+    std::vector<char> guesses;
+    int choice_size = choice.size();
+    //std::cout << choice << "\n"; (ACTIVATE FOR CHEAT)
+
+    for(int i = 0; i < choice_size; i++){
+        letters.push_back(choice[i]);
+    }
+    for(int i = 0; i < choice_size; i++){
+        guesses.push_back('_');
+    }
+
+    while(mistakes > 0){
+        std::cout << "\n";
+        for(int i = 0; i < choice_size; i++){
+            std::cout << guesses[i];
+        }
+        std::cout << "\n";
+        std::cout << "Insert guess: ";
+        std::cin >> guess;
+        if(choice.find(guess)==choice.npos){
+            mistakes--;
+            std::cout << "Letter not in word.\n";
+            if(mistakes!=0){
+            std::cout << "You have " << mistakes << " mistakes left.";}
+        }else{
+            for(int i = 0; i < choice_size; i++){
+                if(letters[i]==guess){
+                    guesses[i] = guess;
+                }
+            }
+        }
+        check = "";
+        for(int i = 0; i < choice_size; i++){
+            check+=guesses[i];
+        }
+        if(check.find('_')==check.npos){
+            state = "win";
+            break;
+        }
+    }
+
+    if(state=="win"){
+        std::cout << "You found the word! You had " << mistakes << " mistakes left.\n";
+    }else{
+        std::cout << "You lost. The word was '" << choice << "'.\n";
+    }
+    std::cout << "Play again? (y/n) ";
+    std::cin >> guess;
+    if(guess=='y'){
+        continue;
+    }else{
+        break;
+    }
+
+}
+    std::cout << "Thank you for playing!";
+    return 0;
+}
