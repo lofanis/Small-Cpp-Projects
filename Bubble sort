@@ -1,0 +1,74 @@
+#include <iostream>
+#include <vector>
+#include <limits>
+#include <string>
+
+int BubbleSort(std::vector<double>& list);
+
+int main(){
+
+    std::vector<double> nums;
+    int numOf = 0;
+    std::cout << "==========BUBBLE SORT==========\n";
+    while(true){
+    std::cout << "How many numbers will be sort? ";
+    while(!(std::cin >> numOf)){
+        std::cout << "Invalid.\nHow many numbers will be sort? ";
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    }
+    if(numOf <= 1){
+        std::cout << "Number must be greater than one.\n";
+    }else{
+        break;
+    }
+    }
+
+    std::cout << "\n" << numOf << " numbers will be sort.\n";
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+    double numPlaceholder;
+
+    for(int i = 0; i < numOf; i ++){
+        std::cout << "Insert number " << i+1 << ": ";
+        while(!(std::cin >> numPlaceholder)){
+            std::cout << "Invalid.\nInsert number " << i+1 << ": ";
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
+        nums.push_back(numPlaceholder);
+    }
+
+    int size = BubbleSort(nums);
+
+    std::cout << "Sorting algorithm running...\n\nHere is the sorted list: ";
+    
+    std::cout << "[";
+    for(int i = 0; i < size; i++){
+        i == size - 1 ? std::cout << nums[i]: std::cout << nums[i] << ", ";
+    }
+    std::cout << "]";
+
+    return 0;
+}
+
+int BubbleSort(std::vector<double>& list){
+    bool gameIsOn = true;
+    double placeholder;
+    int size = list.size();
+    while(gameIsOn){
+        for(int i = 1; i < size; i++){
+            if(list[i] < list[i-1]){
+                placeholder = list[i-1];
+                list[i-1] = list[i];
+                list[i] = placeholder;
+                break;
+            }else{
+                if(i==size-1){
+                    gameIsOn = false;
+                }
+            }
+        }
+    }
+    return size;
+}
