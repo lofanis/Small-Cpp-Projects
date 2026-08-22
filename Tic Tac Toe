@@ -20,19 +20,6 @@ int main(){
                      {0, 0, 0},
                      {0, 0, 0}};
     int dif;
-    while(true){
-        std::cout << "Choose difficulty: (1: Easy / 2: Medium / 3: Hard) ";
-        while(!(std::cin >> dif)){
-            std::cout << "Chooce difficulty: (1: Easy / 2: Medium / 3: Hard) ";
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        }
-        if(dif<1||dif>3){
-            std::cout << "Invalid.\n";
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        }else{
-            break;
-        }
-    }
 
     srand(time(NULL));
     int turn = rand()%2+1;
@@ -58,6 +45,19 @@ int main(){
         if(counter>1){
         std::cout << "\033[2J\033[H";}
         if(!counter){
+            while(true){
+        std::cout << "Choose difficulty: (1: Easy / 2: Medium / 3: Hard) ";
+        while(!(std::cin >> dif)){
+            std::cout << "Chooce difficulty: (1: Easy / 2: Medium / 3: Hard) ";
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
+        if(dif<1||dif>3){
+            std::cout << "Invalid.\n";
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }else{
+            break;
+        }
+    }
             std::cout << playerFirst << " plays first.\n";
         }
         counter ++;
