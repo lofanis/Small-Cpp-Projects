@@ -10,4 +10,4 @@ Contents:
 -Bubble sort: An algorithm for sorting numbers
 -Password evaluator: Gives a percentage score to a password depending on its strength
 -Task manager: Append, delete, complete or view tasks here
-=
+
